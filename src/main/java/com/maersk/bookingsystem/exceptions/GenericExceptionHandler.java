@@ -1,28 +1,25 @@
 package com.maersk.bookingsystem.exceptions;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.support.WebExchangeBindException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GenericExceptionHandler {
 
-    @ExceptionHandler(value
-            = {MethodArgumentNotValidException.class, IllegalArgumentException.class, IllegalStateException.class})
-    protected ResponseEntity<Object> handleConflict(
-            RuntimeException ex, WebRequest request) {
-        String message = "Sorry there was a problem processing your request";
-        Map<String, String> responseMap = new HashMap<>();
-
-        responseMap.put("Code", "Internal Server Error");
-        responseMap.put("Message", message);
-        return new ResponseEntity<>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(WebExchangeBindException.class)
+    public ResponseEntity<List<String>> handleException(WebExchangeBindException e) {
+        var errors = e.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }

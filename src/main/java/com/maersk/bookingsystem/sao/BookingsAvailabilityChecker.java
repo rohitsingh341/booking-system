@@ -2,6 +2,7 @@ package com.maersk.bookingsystem.sao;
 
 import com.maersk.bookingsystem.dto.BookingsAvailabilityCheckResponse;
 import com.maersk.bookingsystem.dto.CheckBookingRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -11,13 +12,15 @@ import java.util.Objects;
 import java.util.Random;
 
 @Service
+@Slf4j
 public class BookingsAvailabilityChecker {
 
     @Value("${external.bookings.availability-check.api.endpoint}")
-    private String externalApiEndpoint;
+    private String availabilityCheckEndpoint;
 
     public BookingsAvailabilityCheckResponse checkAvailability(CheckBookingRequest checkBookingRequest) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(Objects.requireNonNull(externalApiEndpoint)).build().toUri();
+        log.info("Checking bookings availability by calling external API [{}]", availabilityCheckEndpoint);
+        URI uri = UriComponentsBuilder.fromHttpUrl(Objects.requireNonNull(availabilityCheckEndpoint)).build().toUri();
 
         return BookingsAvailabilityCheckResponse.builder().availableSpace(getAvailableSpace()).build();
 
@@ -35,6 +38,6 @@ public class BookingsAvailabilityChecker {
      * @return int
      */
     private int getAvailableSpace() {
-        return new Random().nextInt(2);
+        return new Random().nextInt(5);
     }
 }

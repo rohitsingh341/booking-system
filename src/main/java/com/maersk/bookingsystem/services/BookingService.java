@@ -7,6 +7,7 @@ import com.maersk.bookingsystem.model.Bookings;
 import com.maersk.bookingsystem.model.IDHolder;
 import com.maersk.bookingsystem.repositories.BookingRepository;
 import com.maersk.bookingsystem.sao.BookingsAvailabilityChecker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class BookingService {
 
     public final BookingRepository bookingRepository;
@@ -35,6 +37,7 @@ public class BookingService {
 
         Bookings bookings = convertToDBEntity(confirmBookingRequest, idHolder.getId());
         bookingRepository.save(bookings);
+        log.info("Persisted Bookings in DB - [{}]", bookings);
 
         idGeneratorService.incrementIDValue(idHolder);
         return String.valueOf(bookings.getId());
@@ -54,6 +57,10 @@ public class BookingService {
 
     public boolean checkBookingAvailability(CheckBookingRequest checkBookingRequest) {
         BookingsAvailabilityCheckResponse bookingsAvailabilityCheckResponse = bookingsAvailabilityChecker.checkAvailability(checkBookingRequest);
-        return Objects.nonNull(bookingsAvailabilityCheckResponse) && bookingsAvailabilityCheckResponse.getAvailableSpace() > 0;
+        if (Objects.nonNull(bookingsAvailabilityCheckResponse) && bookingsAvailabilityCheckResponse.getAvailableSpace() > 0) {
+            log.info("Space is available for booking is - [{}]", bookingsAvailabilityCheckResponse.getAvailableSpace());
+            return true;
+        }
+        return false;
     }
 }

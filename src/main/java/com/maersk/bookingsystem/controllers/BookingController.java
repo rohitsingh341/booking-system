@@ -20,8 +20,12 @@ import java.util.StringJoiner;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping(BookingController.REST_BINDINGS)
 public class BookingController {
+
+    public static final String REST_BINDINGS = "/api/bookings";
+    public static final String CHECK = "/check";
+    public static final String CONFIRM = "/confirm";
 
     private final BookingService bookingService;
 
@@ -33,14 +37,14 @@ public class BookingController {
         this.validator = validator;
     }
 
-    @PostMapping("/check")
+    @PostMapping(CHECK)
     public CheckBookingResponse checkBooking(@RequestBody @Valid CheckBookingRequest checkBookingRequest) {
         log.info("Request received to check the availability - [{}]", checkBookingRequest);
         boolean isBookingAvailable = bookingService.checkBookingAvailability(checkBookingRequest);
         return CheckBookingResponse.builder().available(isBookingAvailable).build();
     }
 
-    @PostMapping("/confirm")
+    @PostMapping(CONFIRM)
     public ConfirmBookingResponse confirmBooking(@RequestBody @Valid ConfirmBookingRequest confirmBookingRequest) {
         log.info("Request received to confirm the booking - [{}]", confirmBookingRequest);
         String bookingRef = bookingService.confirmBooking(confirmBookingRequest);

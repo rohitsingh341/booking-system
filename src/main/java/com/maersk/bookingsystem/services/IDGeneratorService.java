@@ -1,7 +1,8 @@
 package com.maersk.bookingsystem.services;
 
 import com.maersk.bookingsystem.model.IDHolder;
-import com.maersk.bookingsystem.repositories.IDGeneratorRepository;
+import com.maersk.bookingsystem.repositories.IDHolderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 import static com.maersk.bookingsystem.constants.Constants.ID_CONTEXT_NAME;
 
+@Slf4j
 @Service
 public class IDGeneratorService {
 
@@ -18,27 +20,34 @@ public class IDGeneratorService {
     @Value("${app.database.sequence.id.start-value}")
     private Integer idValue;
 
+    private final IDHolderRepository idHolderRepository;
+
     @Autowired
-    private IDGeneratorRepository idGeneratorRepository;
+    public IDGeneratorService(IDHolderRepository idHolderRepository) {
+        this.idHolderRepository = idHolderRepository;
+    }
 
     @Transactional
     public IDHolder getCurrentIdHolder() {
-        Optional<IDHolder> idHolderOptional = idGeneratorRepository.findById(ID_CONTEXT_NAME);
+        Optional<IDHolder> idHolderOptional = idHolderRepository.findById(ID_CONTEXT_NAME);
 
+        IDHolder idHolder;
         if (idHolderOptional.isPresent()) {
-            return idHolderOptional.get();
+            idHolder = idHolderOptional.get();
+        } else {
+            idHolder = new IDHolder(ID_CONTEXT_NAME, idValue);
+            idHolderRepository.save(idHolder);
         }
-        else {
-            IDHolder idHolder = new IDHolder(ID_CONTEXT_NAME, idValue);
-            idGeneratorRepository.save(idHolder);
-            return idHolder;
-        }
+
+        log.info("Fetched current ID - [{}]", idHolder);
+        return idHolder;
     }
 
     public void incrementIDValue(IDHolder idHolder) {
         Integer nextId = idHolder.getId() + 1;
         idHolder.setId(nextId);
-        idGeneratorRepository.save(idHolder);
+        idHolderRepository.save(idHolder);
+        log.info("Next id available in DB to use is [{}]", nextId);
     }
 
 
