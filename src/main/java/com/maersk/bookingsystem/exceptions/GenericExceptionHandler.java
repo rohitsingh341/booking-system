@@ -1,6 +1,5 @@
 package com.maersk.bookingsystem.exceptions;
 
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,12 +11,14 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GenericExceptionHandler {
 
+    public static final String FIELD_SEPARATOR = ": ";
+
     @ExceptionHandler(WebExchangeBindException.class)
     public ResponseEntity<List<String>> handleException(WebExchangeBindException e) {
         var errors = e.getBindingResult()
-                .getAllErrors()
+                .getFieldErrors()
                 .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .map(error -> error.getField() + FIELD_SEPARATOR + error.getDefaultMessage())
                 .collect(Collectors.toList());
         return ResponseEntity.badRequest().body(errors);
     }
