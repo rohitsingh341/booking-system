@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ConfirmBookingRequest {
 
-    @ValueOfEnum(enumClass = ContainerType.class, message = "Must be a valid Container Type")
+    @ValueOfEnum(enumClass = ContainerType.class, message = "Must be a valid container")
     private String containerType;
 
     private int containerSize;
