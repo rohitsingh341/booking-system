@@ -32,14 +32,20 @@ public class IDGeneratorService {
         Optional<IDHolder> idHolderOptional = idHolderRepository.findById(ID_CONTEXT_NAME);
 
         IDHolder idHolder;
+        idHolder = createIDHolderIfDoesNotExist(idHolderOptional);
+
+        log.info("Fetched current ID - [{}]", idHolder);
+        return idHolder;
+    }
+
+    private IDHolder createIDHolderIfDoesNotExist(Optional<IDHolder> idHolderOptional) {
+        IDHolder idHolder;
         if (idHolderOptional.isPresent()) {
             idHolder = idHolderOptional.get();
         } else {
             idHolder = new IDHolder(ID_CONTEXT_NAME, idValue);
             idHolderRepository.save(idHolder);
         }
-
-        log.info("Fetched current ID - [{}]", idHolder);
         return idHolder;
     }
 
@@ -49,6 +55,4 @@ public class IDGeneratorService {
         idHolderRepository.save(idHolder);
         log.info("Next id available in DB to use is [{}]", nextId);
     }
-
-
 }
