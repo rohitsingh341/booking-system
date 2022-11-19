@@ -1,21 +1,33 @@
 package com.maersk.bookingsystem.services;
 
+import com.maersk.bookingsystem.dto.BookingsAvailabilityCheckResponse;
+import com.maersk.bookingsystem.dto.CheckBookingRequest;
 import com.maersk.bookingsystem.dto.ConfirmBookingRequest;
 import com.maersk.bookingsystem.model.Bookings;
 import com.maersk.bookingsystem.model.IDHolder;
 import com.maersk.bookingsystem.repositories.BookingRepository;
+import com.maersk.bookingsystem.sao.BookingsAvailabilityChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 public class BookingService {
 
-    @Autowired
-    public BookingRepository bookingRepository;
+    public final BookingRepository bookingRepository;
+
+    public final IDGeneratorService idGeneratorService;
+
+    private final BookingsAvailabilityChecker bookingsAvailabilityChecker;
 
     @Autowired
-    public IDGeneratorService idGeneratorService;
+    public BookingService(BookingRepository bookingRepository, IDGeneratorService idGeneratorService, BookingsAvailabilityChecker bookingsAvailabilityChecker) {
+        this.bookingRepository = bookingRepository;
+        this.idGeneratorService = idGeneratorService;
+        this.bookingsAvailabilityChecker = bookingsAvailabilityChecker;
+    }
 
     @Transactional
     public String confirmBooking(ConfirmBookingRequest confirmBookingRequest) {
@@ -32,10 +44,16 @@ public class BookingService {
         return Bookings.builder()
                 .id(id)
                 .containerSize(confirmBookingRequest.getContainerSize())
-                .containerType(confirmBookingRequest.getContainerType().name())
+                .containerType(confirmBookingRequest.getContainerType())
                 .destination(confirmBookingRequest.getDestination())
                 .origin(confirmBookingRequest.getOrigin())
-                .quantity(confirmBookingRequest.getQuantity())
+                .quantity(Integer.valueOf(confirmBookingRequest.getQuantity()))
+                .timestamp(confirmBookingRequest.getTimestamp())
                 .build();
+    }
+
+    public boolean checkBookingAvailability(CheckBookingRequest checkBookingRequest) {
+        BookingsAvailabilityCheckResponse bookingsAvailabilityCheckResponse = bookingsAvailabilityChecker.checkAvailability(checkBookingRequest);
+        return Objects.nonNull(bookingsAvailabilityCheckResponse) && bookingsAvailabilityCheckResponse.getAvailableSpace() > 0;
     }
 }

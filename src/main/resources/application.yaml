@@ -7,5 +7,15 @@ spring:
       contact-points: localhost
 
 app:
-  id:
-    start-value: 957000001
+  database:
+    sequence:
+        id:
+          start-value: 957000001
+
+
+external:
+  bookings:
+    availability-check:
+      api:
+        endpoint: https://maersk.com/api/bookings/checkAvailable
+

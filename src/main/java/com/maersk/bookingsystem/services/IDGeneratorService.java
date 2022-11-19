@@ -15,7 +15,7 @@ import static com.maersk.bookingsystem.constants.Constants.ID_CONTEXT_NAME;
 public class IDGeneratorService {
 
 
-    @Value("${app.id.start-value}")
+    @Value("${app.database.sequence.id.start-value}")
     private Integer idValue;
 
     @Autowired
