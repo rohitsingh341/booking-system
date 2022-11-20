@@ -5,6 +5,6 @@ import lombok.Value;
 
 @Builder
 @Value
-public class CheckBookingResponse {
+public class BookingCheckResponse {
     private boolean available;
 }

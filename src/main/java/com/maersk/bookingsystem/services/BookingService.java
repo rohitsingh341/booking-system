@@ -1,8 +1,8 @@
 package com.maersk.bookingsystem.services;
 
 import com.maersk.bookingsystem.dto.BookingsAvailabilityCheckResponse;
-import com.maersk.bookingsystem.dto.CheckBookingRequest;
-import com.maersk.bookingsystem.dto.ConfirmBookingRequest;
+import com.maersk.bookingsystem.dto.BookingCheckRequest;
+import com.maersk.bookingsystem.dto.BookingConfirmRequest;
 import com.maersk.bookingsystem.model.Bookings;
 import com.maersk.bookingsystem.model.IDHolder;
 import com.maersk.bookingsystem.repositories.BookingRepository;
@@ -32,10 +32,10 @@ public class BookingService {
     }
 
     @Transactional
-    public String confirmBooking(ConfirmBookingRequest confirmBookingRequest) {
+    public String confirmBooking(BookingConfirmRequest bookingConfirmRequest) {
         IDHolder idHolder = idGeneratorService.getCurrentIdHolder();
 
-        Bookings bookings = convertToDBEntity(confirmBookingRequest, idHolder.getId());
+        Bookings bookings = convertToDBEntity(bookingConfirmRequest, idHolder.getId());
         bookingRepository.save(bookings);
         log.info("Persisted Bookings in DB - [{}]", bookings);
 
@@ -43,20 +43,20 @@ public class BookingService {
         return String.valueOf(bookings.getId());
     }
 
-    private Bookings convertToDBEntity(ConfirmBookingRequest confirmBookingRequest, Integer id) {
+    private Bookings convertToDBEntity(BookingConfirmRequest bookingConfirmRequest, Integer id) {
         return Bookings.builder()
                 .id(id)
-                .containerSize(confirmBookingRequest.getContainerSize())
-                .containerType(confirmBookingRequest.getContainerType())
-                .destination(confirmBookingRequest.getDestination())
-                .origin(confirmBookingRequest.getOrigin())
-                .quantity(Integer.valueOf(confirmBookingRequest.getQuantity()))
-                .timestamp(confirmBookingRequest.getTimestamp())
+                .containerSize(bookingConfirmRequest.getContainerSize())
+                .containerType(bookingConfirmRequest.getContainerType())
+                .destination(bookingConfirmRequest.getDestination())
+                .origin(bookingConfirmRequest.getOrigin())
+                .quantity(Integer.valueOf(bookingConfirmRequest.getQuantity()))
+                .timestamp(bookingConfirmRequest.getTimestamp())
                 .build();
     }
 
-    public boolean checkBookingAvailability(CheckBookingRequest checkBookingRequest) {
-        BookingsAvailabilityCheckResponse bookingsAvailabilityCheckResponse = bookingsAvailabilityChecker.checkAvailability(checkBookingRequest);
+    public boolean checkBookingAvailability(BookingCheckRequest bookingCheckRequest) {
+        BookingsAvailabilityCheckResponse bookingsAvailabilityCheckResponse = bookingsAvailabilityChecker.checkAvailability(bookingCheckRequest);
         if (Objects.nonNull(bookingsAvailabilityCheckResponse) && bookingsAvailabilityCheckResponse.getAvailableSpace() > 0) {
             log.info("Space is available for booking is - [{}]", bookingsAvailabilityCheckResponse.getAvailableSpace());
             return true;

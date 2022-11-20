@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.maersk.bookingsystem.enums.ContainerType;
 import com.maersk.bookingsystem.validators.ValueOfEnum;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
@@ -11,8 +12,9 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Value
+@Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CheckBookingRequest {
+public class BookingCheckRequest {
 
     @ValueOfEnum(enumClass = ContainerType.class, message = "Must be a valid Container Type")
     private String containerType;

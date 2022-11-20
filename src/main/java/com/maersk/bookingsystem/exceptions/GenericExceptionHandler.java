@@ -1,5 +1,6 @@
 package com.maersk.bookingsystem.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@Slf4j
 public class GenericExceptionHandler {
 
     public static final String FIELD_SEPARATOR = ": ";
@@ -32,6 +34,7 @@ public class GenericExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {
 
+        log.info("Internal Server Error - [{}]", e.getMessage());
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(CODE, HttpStatus.INTERNAL_SERVER_ERROR);
         body.put(DESCRIPTION, PROBLEM_PROCESSING_YOUR_REQUEST);

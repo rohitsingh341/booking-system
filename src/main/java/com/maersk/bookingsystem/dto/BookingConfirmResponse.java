@@ -5,6 +5,6 @@ import lombok.Value;
 
 @Builder
 @Value
-public class ConfirmBookingResponse {
+public class BookingConfirmResponse {
     private String bookingRef;
 }

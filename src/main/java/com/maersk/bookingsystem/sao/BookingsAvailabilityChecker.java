@@ -1,7 +1,7 @@
 package com.maersk.bookingsystem.sao;
 
 import com.maersk.bookingsystem.dto.BookingsAvailabilityCheckResponse;
-import com.maersk.bookingsystem.dto.CheckBookingRequest;
+import com.maersk.bookingsystem.dto.BookingCheckRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class BookingsAvailabilityChecker {
     @Value("${external.bookings.availability-check.api.endpoint}")
     private String availabilityCheckEndpoint;
 
-    public BookingsAvailabilityCheckResponse checkAvailability(CheckBookingRequest checkBookingRequest) {
+    public BookingsAvailabilityCheckResponse checkAvailability(BookingCheckRequest bookingCheckRequest) {
         log.info("Checking bookings availability by calling external API [{}]", availabilityCheckEndpoint);
         URI uri = UriComponentsBuilder.fromHttpUrl(Objects.requireNonNull(availabilityCheckEndpoint)).build().toUri();
 
