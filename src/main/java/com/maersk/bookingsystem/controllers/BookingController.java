@@ -29,12 +29,9 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    private final Validator validator;
-
     @Autowired
-    public BookingController(BookingService bookingService, Validator validator) {
+    public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
-        this.validator = validator;
     }
 
     @PostMapping(CHECK)
@@ -50,23 +47,4 @@ public class BookingController {
         String bookingRef = bookingService.confirmBooking(bookingConfirmRequest);
         return BookingConfirmResponse.builder().bookingRef(bookingRef).build();
     }
-
-    private boolean validate(BookingConfirmRequest bookingConfirmRequest) {
-
-        Set<ConstraintViolation<BookingConfirmRequest>> constraintViolations = validator.validate(bookingConfirmRequest);
-
-        if (constraintViolations != null && !constraintViolations.isEmpty()) {
-            StringJoiner stringJoiner = new StringJoiner(" ");
-            constraintViolations.forEach(
-                    loginModelConstraintViolation ->
-                            stringJoiner
-                                    .add(loginModelConstraintViolation.getPropertyPath().toString())
-                                    .add(":")
-                                    .add(loginModelConstraintViolation.getMessage()));
-            throw new RuntimeException(stringJoiner.toString());
-        }
-
-        return true;
-    }
-
 }
